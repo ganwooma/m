@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>랜덤 오디오 퀴즈</title>
+  <style>
+    #mp3-list {
+      margin-top: 20px;
+    }
+    .mp3-button {
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>노래 재생을 눌러 노래를 재생하고 그 노래를 연주하고 있는 악기를 맞추세요.</h1>
+  <div id="game-container">
+    <button id="start-button">노래 재생</button>
+  </div>
+  
+  <div id="mp3-list">
+    <h3>모든 노래 듣기</h3>
+    <!-- 여기 버튼들이 추가됩니다 -->
+  </div>
+
+  <script>
+    // MP3 파일 배열
+    const audioFiles = [
+      "더블베이스.mp3", "마림바.mp3", "바순.mp3", "바이올린.mp3", "비올라.mp3",
+      "심벌즈.mp3", "오보에.mp3", "첼로.mp3", "클라리넷.mp3", "탬버린.mp3",
+      "튜바.mp3", "트라이앵글.mp3", "트럼펫.mp3", "트롬본.mp3", "팀파니.mp3",
+      "플루트.mp3", "피콜로.mp3", "하프.mp3", "호른.mp3"
+    ];
+
+    let currentAudio = null;
+    let allAudios = []; // 재생 중인 모든 오디오 객체를 저장
+
+    // 노래 재생 버튼 클릭 이벤트
+    document.getElementById("start-button").addEventListener("click", () => {
+      stopAllAudios(); // 모든 오디오 멈춤
+
+      // 버튼 숨기기
+      const container = document.getElementById("game-container");
+      container.innerHTML = "";
+
+      // 랜덤 오디오 파일 선택
+      const randomFileName = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+      currentAudio = new Audio(randomFileName);
+      allAudios.push(currentAudio); // 새 오디오 추가
+      currentAudio.play();
+
+      // 입력 필드와 확인 버튼 생성
+      const inputField = document.createElement("input");
+      inputField.type = "text";
+      inputField.placeholder = "악기 이름은?";
+      inputField.id = "answer-input";
+
+      const submitButton = document.createElement("button");
+      submitButton.textContent = "확인";
+      submitButton.addEventListener("click", () => checkAnswer(randomFileName));
+
+      container.appendChild(inputField);
+      container.appendChild(submitButton);
+    });
+
+    function checkAnswer(correctFileName) {
+      const userInput = document.getElementById("answer-input").value.trim();
+      const correctAnswer = correctFileName.replace(".mp3", ""); // 확장자 제거
+
+      const container = document.getElementById("game-container");
+      container.innerHTML = ""; // 입력 필드 제거
+
+      if (userInput === correctAnswer) {
+        // 정답일 경우
+        stopAllAudios();
+
+        const restartButton = document.createElement("button");
+        restartButton.id = "start-button";
+        restartButton.textContent = "다시 하기";
+        restartButton.addEventListener("click", () => location.reload());
+        container.appendChild(restartButton);
+
+        alert(`정답입니다! 정답은 "${correctAnswer}"(이)였습니다.`);
+      } else {
+        // 틀린 경우 정답 알려주기
+        const retryButton = document.createElement("button");
+        retryButton.textContent = "다시 하기";
+        retryButton.addEventListener("click", () => location.reload());
+        container.appendChild(retryButton);
+
+        alert(`틀렸습니다! 정답은 "${correctAnswer}"(이)였습니다.`);
+      }
+    }
+
+    function stopAllAudios() {
+      // 모든 오디오를 멈추고 배열 초기화
+      allAudios.forEach(audio => audio.pause());
+      allAudios = [];
+    }
+
+    // 모든 MP3 파일에 대한 버튼 생성
+    const mp3ListContainer = document.getElementById("mp3-list");
+    audioFiles.forEach(file => {
+      const button = document.createElement("button");
+      button.textContent = file.replace(".mp3", ""); // 버튼 텍스트에서 확장자 제거
+      button.classList.add("mp3-button");
+
+      button.addEventListener("click", () => {
+        stopAllAudios(); // 다른 오디오 정지
+        const audio = new Audio(file);
+        allAudios.push(audio); // 새 오디오 추가
+        audio.play();
+      });
+
+      mp3ListContainer.appendChild(button);
+    });
+  </script>
+</body>
+</html>
