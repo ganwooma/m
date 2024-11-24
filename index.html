@@ -345,11 +345,11 @@ h3 {
       // 설명 텍스트 추가
       const description = document.createElement("div");
       description.classList.add("button-description");
-      description.textContent = `악기 소리 듣기 / 활성, 비활성 / 다운로드`;
+      description.textContent = file.replace(".mp3", "");
   
       // MP3 버튼 생성
       const button = document.createElement("button");
-      button.textContent = file.replace(".mp3", " 소리"); // 버튼 텍스트에서 확장자 제거
+      button.textContent = `재생`; // 버튼 텍스트에서 확장자 제거
       button.classList.add("mp3-button");
   
       button.addEventListener("click", () => {
@@ -392,6 +392,5 @@ h3 {
       mp3ListContainer.appendChild(container);
     });
   </script>
-  
 </body>
 </html>
