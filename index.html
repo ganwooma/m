@@ -54,7 +54,9 @@
     let disabledFiles = []; // 비활성화된 파일 목록
 
     // 노래 재생 버튼 클릭 이벤트
-    document.getElementById("start-button").addEventListener("click", () => {
+    document.getElementById("start-button").addEventListener("click", startNewGame);
+
+    function startNewGame() {
       stopAllAudios(); // 모든 오디오 멈춤
 
       // 버튼 숨기기
@@ -85,7 +87,7 @@
 
       container.appendChild(inputField);
       container.appendChild(submitButton);
-    });
+    }
 
     function checkAnswer(correctFileName) {
       const userInput = document.getElementById("answer-input").value.trim();
@@ -101,7 +103,7 @@
         const restartButton = document.createElement("button");
         restartButton.id = "start-button";
         restartButton.textContent = "다시 시작";
-        restartButton.addEventListener("click", () => location.reload());
+        restartButton.addEventListener("click", startNewGame); // 새 게임 시작
         container.appendChild(restartButton);
         alert(`정답입니다! 정답은 "${correctAnswer}"(이)였습니다.`);
 
@@ -109,7 +111,7 @@
         // 틀린 경우 정답 알려주기
         const retryButton = document.createElement("button");
         retryButton.textContent = "다시 시작"; 
-        retryButton.addEventListener("click", () => location.reload());
+        retryButton.addEventListener("click", startNewGame); // 새 게임 시작
         container.appendChild(retryButton);
 
         alert(`틀렸습니다! 정답은 "${correctAnswer}"(이)였습니다.`);
@@ -167,7 +169,7 @@
       downloadButton.href = file;
       downloadButton.download = file;
       downloadButton.classList.add("download-button");
-      downloadButton.textContent = `${file.replace(".mp3", "")} 소리 다운로드`;
+      downloadButton.textContent = `다운로드`;
 
       // 버튼들을 컨테이너에 추가
       container.appendChild(description);
