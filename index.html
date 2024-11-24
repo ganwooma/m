@@ -247,98 +247,111 @@ h3 {
       "튜바.mp3", "트라이앵글.mp3", "트럼펫.mp3", "트롬본.mp3", "팀파니.mp3", 
       "플루트.mp3", "피콜로.mp3", "하프.mp3", "호른.mp3"
     ];
-
+  
     let currentAudio = null;
     let allAudios = []; // 재생 중인 모든 오디오 객체를 저장
     let disabledFiles = []; // 비활성화된 파일 목록
-
+    let playedFiles = []; // 이미 재생된 파일 목록
+  
     // 노래 재생 버튼 클릭 이벤트
     document.getElementById("start-button").addEventListener("click", startNewGame);
-
+  
     function startNewGame() {
       stopAllAudios(); // 모든 오디오 멈춤
-
+  
       // 버튼 숨기기
       const container = document.getElementById("game-container");
       container.innerHTML = "";
-
-      // 랜덤 오디오 파일 선택 (비활성화된 파일 제외)
-      const availableFiles = audioFiles.filter(file => !disabledFiles.includes(file));
+  
+      // 활성화된 파일 중 이미 재생된 파일 제외
+      const availableFiles = audioFiles.filter(file => 
+        !disabledFiles.includes(file) && !playedFiles.includes(file)
+      );
+  
+      // 모든 파일이 재생된 경우 재생된 파일 목록 초기화
+      if (availableFiles.length === 0) {
+        playedFiles = [];
+        availableFiles.push(...audioFiles.filter(file => !disabledFiles.includes(file)));
+      }
+  
       if (availableFiles.length === 0) {
         alert("활성화된 노래가 없습니다. 다시 시작해주세요.");
         return;
       }
-
+  
+      // 랜덤 파일 선택
       const randomFileName = availableFiles[Math.floor(Math.random() * availableFiles.length)];
+      playedFiles.push(randomFileName); // 현재 파일을 재생된 목록에 추가
+  
       currentAudio = new Audio(randomFileName);
       allAudios.push(currentAudio); // 새 오디오 추가
       currentAudio.play();
-
+  
       // 입력 필드와 확인 버튼 생성
       const inputField = document.createElement("input");
       inputField.type = "text";
       inputField.placeholder = "악기 이름은?"; 
       inputField.id = "answer-input";
-
+  
       const submitButton = document.createElement("button");
       submitButton.textContent = "확인";
       submitButton.addEventListener("click", () => checkAnswer(randomFileName));
-
+  
       container.appendChild(inputField);
       container.appendChild(submitButton);
     }
-
+  
     function checkAnswer(correctFileName) {
       const userInput = document.getElementById("answer-input").value.trim();
       const correctAnswer = correctFileName.replace(".mp3", ""); // 확장자 제거
-
+  
       const container = document.getElementById("game-container");
       container.innerHTML = ""; // 입력 필드 제거
-
+  
       if (userInput === correctAnswer) {
         // 정답일 경우
         stopAllAudios();
-
+  
         const restartButton = document.createElement("button");
         restartButton.id = "start-button";
         restartButton.textContent = "다시 시작";
         restartButton.addEventListener("click", startNewGame); // 새 게임 시작
         container.appendChild(restartButton);
         alert(`정답입니다! 정답은 "${correctAnswer}"(이)였습니다.`);
-
+  
       } else {
         // 틀린 경우 정답 알려주기
         const retryButton = document.createElement("button");
         retryButton.textContent = "다시 시작"; 
         retryButton.addEventListener("click", startNewGame); // 새 게임 시작
         container.appendChild(retryButton);
-
+  
         alert(`틀렸습니다! 정답은 "${correctAnswer}"(이)였습니다.`);
       }
     }
-
+  
     function stopAllAudios() {
       // 모든 오디오를 멈추고 배열 초기화
       allAudios.forEach(audio => audio.pause());
       allAudios = [];
     }
-
+  
     // MP3 파일 버튼과 다운로드 버튼 생성
     const mp3ListContainer = document.getElementById("mp3-list");
     audioFiles.forEach(file => {
       const container = document.createElement("div");
       container.classList.add("button-container");
-
+  
       // 설명 텍스트 추가
       const description = document.createElement("div");
       description.classList.add("button-description");
       description.textContent = `악기 소리 듣기 / 활성, 비활성 / 다운로드`;
-
+  
       // MP3 버튼 생성
       const button = document.createElement("button");
       button.textContent = file.replace(".mp3", " 소리"); // 버튼 텍스트에서 확장자 제거
       button.classList.add("mp3-button");
-
+  
       button.addEventListener("click", () => {
         if (disabledFiles.includes(file)) return; // 비활성화된 파일 클릭 시 아무 일도 일어나지 않음
         stopAllAudios(); // 다른 오디오 정지
@@ -346,7 +359,7 @@ h3 {
         allAudios.push(audio); // 새 오디오 추가
         audio.play();
       });
-
+  
       // 비활성화/활성화 버튼
       const disableButton = document.createElement("button");
       disableButton.textContent = `비활성화`;
@@ -362,14 +375,14 @@ h3 {
           disableButton.textContent = `활성화`;
         }
       });
-
+  
       // 다운로드 버튼
       const downloadButton = document.createElement("a");
       downloadButton.href = file;
       downloadButton.download = file;
       downloadButton.classList.add("download-button");
       downloadButton.textContent = `다운로드`;
-
+  
       // 버튼들을 컨테이너에 추가
       container.appendChild(description);
       container.appendChild(button);
@@ -379,5 +392,6 @@ h3 {
       mp3ListContainer.appendChild(container);
     });
   </script>
+  
 </body>
 </html>
